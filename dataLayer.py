@@ -112,6 +112,14 @@ class TimedMeetingRooms(MeetingRooms):
     def what_time_is_booked(self):
         return self.booked_time
 
+class ListOfTimedMeetingRooms:
+    def __init__(self):
+        self.rooms = []
+    def add_room(self, timed_meeting_room):
+        self.rooms.append(timed_meeting_room)
+    def delete_room():
+        pass
+
 #класс отвечает распределение комнат и выдачу свободных
 class ListOfMeetingRooms:
     def __init__(self):
