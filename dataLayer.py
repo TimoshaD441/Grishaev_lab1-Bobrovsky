@@ -22,6 +22,7 @@ class TimedMeetingRooms(MeetingRooms):
     def __init__(self,max_people):
         super().__init__(max_people)
         self.booked_time = []
+
     def is_free_for_people(self, people,time_from=None,time_to=None):
         #если нет аргументов - вызываем старый метод класса
         if time_from is None and time_to is None:
@@ -51,11 +52,38 @@ class TimedMeetingRooms(MeetingRooms):
         #время до не должно быть равно времени после
         if time_from == time_to:
             return ValueError("Промежуток времени равен нулю")
-
-        #ЗДЕСЬ НАДО РЕАЛИЗОВАТЬ САМУ БРОНЬ
+        #сама проверка есть ли место по времени
         if super().is_free_for_people(people):
-            pass
+            if len(self.booked_time) == 0:
+                return 1
+            if self.booked_time[-1] < time_from:
+                return 1
+            if self.booked_time[0] > time_to:
+                return 1
+            for index in range(2,len(self.booked_time),2):
+                if self.booked_time[index-1] < time_from and time_to < self.booked_time[index+1]:
+                    return 1
+        return 0
 
+    def book_room(self, people, time_from, time_to):
+        if not self.is_free_for_people(people, time_to,time_from):
+            return ValueError("Вы указали недоступное время")
+        if len(self.booked_time) == 0:
+            self.booked_time.append([time_from, time_to])
+            return 1
+        if self.booked_time[-1] < time_from:
+            self.booked_time.append([time_from, time_to])
+            return 1
+        if self.booked_time[0] > time_to:
+            self.booked_time[:0] = [time_from, time_to]
+            return 1
+        for index in range(2, len(self.booked_time), 2):
+            if self.booked_time[index - 1] < time_from and time_to < self.booked_time[index + 1]:
+                self.booked_time[index:index] = [time_from, time_to]
+                return 1
+        return ValueError("Указанное время недоступно, но проверка на доступность сказала обратное")
+
+    #написать функцию под вывод занятого времени
 
 #класс отвечает распределение комнат и выдачу свободных
 class ListOfMeetingRooms:
