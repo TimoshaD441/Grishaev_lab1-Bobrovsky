@@ -83,6 +83,32 @@ class TimedMeetingRooms(MeetingRooms):
                 return 1
         raise ValueError("Указанное время недоступно, но проверка на доступность сказала обратное")
 
+    def unbook_room(self, time_from, time_to):
+        #проверка времени c на корректность
+        if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}",time_from):
+            raise ValueError("Неверный формат времени")
+        try:
+            time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%D")
+        except ValueError:
+            raise ValueError("Несуществующее время")
+        #проверка времени до на корректность
+        if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}", time_to):
+            raise ValueError("Неверный формат времени")
+        try:
+            time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%D")
+        except ValueError:
+            raise ValueError("Несуществующее время")
+        #время до должно быть меньше времени после
+        if time_from > time_to:
+            raise ValueError("Бронь начинается раньше, чем заканчивается")
+        #время до не должно быть равно времени после
+        if time_from == time_to:
+            raise ValueError("Промежуток времени равен нулю")
+        for index in range(0,len(self.booked_time),2):
+            if time_to == self.booked_time[index] and time_from == self.booked_time[index+1]:
+                self.booked_time = self.booked_time[:index]+self.booked_time[index+2:]
+        raise ValueError("Бронь отсутствует, попытка удалить несуществующую бронь")
+
     def what_time_is_booked(self):
         return self.booked_time
 
