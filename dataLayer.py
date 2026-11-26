@@ -1,7 +1,10 @@
+import re
+from datetime import datetime
+
 #класс самой комнаты
 class MeetingRooms:
     def __init__(self, max_people):
-        if self.max_people <= 0:
+        if max_people <= 0:
             raise ValueError("Не положительное количество людей в переговорке")
         self.max_people = max_people
         self.freedom = 1 #1 - свободна
@@ -14,6 +17,45 @@ class MeetingRooms:
             self.freedom = 0
         if self.freedom == 0:
             self.freedom = 1
+
+class TimedMeetingRooms(MeetingRooms):
+    def __init__(self,max_people):
+        super().__init__(max_people)
+        self.booked_time = []
+    def is_free_for_people(self, people,time_from=None,time_to=None):
+        #если нет аргументов - вызываем старый метод класса
+        if time_from is None and time_to is None:
+            return super().is_free_for_people(people)
+        elif time_from is None or time_to is None:
+            return ValueError("Передано одно время вместо промежутка, бронь невозможна")
+
+        #проверка времени c на корректность
+        if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}",time_from):
+            return ValueError("Неверный формат времени")
+        try:
+            time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%D")
+        except ValueError:
+            return ValueError("Несуществующее время")
+
+        #проверка времени до на корректность
+        if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}", time_to):
+            return ValueError("Неверный формат времени")
+        try:
+            time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%D")
+        except ValueError:
+            return ValueError("Несуществующее время")
+
+        #время до должно быть меньше времени после
+        if time_from > time_to:
+            return ValueError("Бронь начинается раньше, чем заканчивается")
+        #время до не должно быть равно времени после
+        if time_from == time_to:
+            return ValueError("Промежуток времени равен нулю")
+
+        #ЗДЕСЬ НАДО РЕАЛИЗОВАТЬ САМУ БРОНЬ
+        if super().is_free_for_people(people):
+            pass
+
 
 #класс отвечает распределение комнат и выдачу свободных
 class ListOfMeetingRooms:
