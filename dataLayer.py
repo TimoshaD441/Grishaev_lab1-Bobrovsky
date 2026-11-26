@@ -28,30 +28,30 @@ class TimedMeetingRooms(MeetingRooms):
         if time_from is None and time_to is None:
             return super().is_free_for_people(people)
         elif time_from is None or time_to is None:
-            return ValueError("Передано одно время вместо промежутка, бронь невозможна")
+            raise ValueError("Передано одно время вместо промежутка, бронь невозможна")
 
         #проверка времени c на корректность
         if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}",time_from):
-            return ValueError("Неверный формат времени")
+            raise ValueError("Неверный формат времени")
         try:
             time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%D")
         except ValueError:
-            return ValueError("Несуществующее время")
+            raise ValueError("Несуществующее время")
 
         #проверка времени до на корректность
         if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}", time_to):
-            return ValueError("Неверный формат времени")
+            raise ValueError("Неверный формат времени")
         try:
             time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%D")
         except ValueError:
-            return ValueError("Несуществующее время")
+            raise ValueError("Несуществующее время")
 
         #время до должно быть меньше времени после
         if time_from > time_to:
-            return ValueError("Бронь начинается раньше, чем заканчивается")
+            raise ValueError("Бронь начинается раньше, чем заканчивается")
         #время до не должно быть равно времени после
         if time_from == time_to:
-            return ValueError("Промежуток времени равен нулю")
+            raise ValueError("Промежуток времени равен нулю")
         #сама проверка есть ли место по времени
         if super().is_free_for_people(people):
             if len(self.booked_time) == 0:
@@ -67,7 +67,7 @@ class TimedMeetingRooms(MeetingRooms):
 
     def book_room(self, people, time_from, time_to):
         if not self.is_free_for_people(people, time_to,time_from):
-            return ValueError("Вы указали недоступное время")
+            raise ValueError("Вы указали недоступное время")
         if len(self.booked_time) == 0:
             self.booked_time.append([time_from, time_to])
             return 1
@@ -81,9 +81,10 @@ class TimedMeetingRooms(MeetingRooms):
             if self.booked_time[index - 1] < time_from and time_to < self.booked_time[index + 1]:
                 self.booked_time[index:index] = [time_from, time_to]
                 return 1
-        return ValueError("Указанное время недоступно, но проверка на доступность сказала обратное")
+        raise ValueError("Указанное время недоступно, но проверка на доступность сказала обратное")
 
-    #написать функцию под вывод занятого времени
+    def what_time_is_booked(self):
+        return self.booked_time
 
 #класс отвечает распределение комнат и выдачу свободных
 class ListOfMeetingRooms:
