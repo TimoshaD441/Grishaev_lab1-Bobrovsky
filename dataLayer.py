@@ -3,7 +3,7 @@ from datetime import datetime
 
 #класс самой комнаты
 class MeetingRooms:
-    def __init__(self, max_people):
+    def __init__(self, max_people: int):
         if max_people <= 0:
             raise ValueError("Не положительное количество людей в переговорке")
         self.max_people = max_people
@@ -113,7 +113,7 @@ class TimedMeetingRooms(MeetingRooms):
                 self.booked_time = self.booked_time[:index]+self.booked_time[index+2:]
         raise ValueError("Бронь отсутствует, попытка удалить несуществующую бронь")
 
-    def what_time_is_booked(self):
+    def get_booked_time(self):
         return self.booked_time
 
 #класс отвечает за бронь комнат и хранение бронированных комнат
@@ -138,7 +138,7 @@ class ListOfTimedMeetingRooms:
         return 0
 
     def book_room(self, number_of_people: int, time_from: str, time_to: str, number_of_room: int):
-        if number_of_room not in range(1, len(self.rooms)):
+        if number_of_room not in range(1, len(self.rooms)+1):
             raise ValueError("Несуществующий номер переговорки")
         room = self.rooms[number_of_room-1]
         if room.is_free_for_people(number_of_people,time_from,time_to):
@@ -152,3 +152,4 @@ class ListOfTimedMeetingRooms:
 
     def get_rooms(self):
         return self.rooms
+
