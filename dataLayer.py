@@ -116,6 +116,7 @@ class TimedMeetingRooms(MeetingRooms):
     def what_time_is_booked(self):
         return self.booked_time
 
+#класс отвечает за бронь комнат и хранение бронированных комнат
 class ListOfTimedMeetingRooms:
     def __init__(self):
         self.rooms = []
@@ -151,35 +152,3 @@ class ListOfTimedMeetingRooms:
 
     def get_rooms(self):
         return self.rooms
-
-
-#класс отвечает распределение комнат и выдачу свободных
-class ListOfMeetingRooms:
-    def __init__(self):
-        self.list_of_meeting_rooms = []
-
-    def add_room(self, meeting_room):
-        self.list_of_meeting_rooms.append(meeting_room)
-
-    def delete_room(self, number_of_room):
-        room = self.list_of_meeting_rooms[number_of_room-1]
-        if number_of_room not in range(1,len(self.list_of_meeting_rooms)):
-            raise ValueError("Несуществующий номер переговорки")
-        else:
-            if room.is_free_for_people(1):
-                del room
-
-    def find_room_for_people(self, number_of_people):
-        #алгоритм выбора и распределения можно доработать
-        for i in range(len(self.list_of_meeting_rooms)):
-            room = self.list_of_meeting_rooms[i]
-            if room.is_free_for_people(number_of_people) ==  1:
-                return i+1
-        return "Нет свободной комнаты"
-
-    def change_status_room_n(self, number_room):
-        if number_room not in range(1,len(self.list_of_meeting_rooms)):
-            raise ValueError("Несуществующий номер переговорки")
-        else:
-            self.list_of_meeting_rooms[number_room-1].change_free()
-            return 1
