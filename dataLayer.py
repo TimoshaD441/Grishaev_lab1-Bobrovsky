@@ -38,7 +38,7 @@ class TimedMeetingRooms(MeetingRooms):
         if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}",time_from):
             raise ValueError("Неверный формат времени")
         try:
-            time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%D")
+            time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%M")
         except ValueError:
             raise ValueError("Несуществующее время")
 
@@ -46,7 +46,7 @@ class TimedMeetingRooms(MeetingRooms):
         if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}", time_to):
             raise ValueError("Неверный формат времени")
         try:
-            time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%D")
+            time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%M")
         except ValueError:
             raise ValueError("Несуществующее время")
 
@@ -70,13 +70,16 @@ class TimedMeetingRooms(MeetingRooms):
         return 0
 
     def book_room(self, people, time_from, time_to):
-        if not self.is_free_for_people(people, time_to,time_from):
+
+        if not self.is_free_for_people(people, time_from,time_to):
             raise ValueError("Вы указали недоступное время")
+        time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%M")
+        time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%M")
         if len(self.booked_time) == 0:
-            self.booked_time.append([time_from, time_to])
+            self.booked_time += [time_from, time_to]
             return 1
         if self.booked_time[-1] < time_from:
-            self.booked_time.append([time_from, time_to])
+            self.booked_time += [time_from, time_to]
             return 1
         if self.booked_time[0] > time_to:
             self.booked_time[:0] = [time_from, time_to]
@@ -92,14 +95,14 @@ class TimedMeetingRooms(MeetingRooms):
         if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}",time_from):
             raise ValueError("Неверный формат времени")
         try:
-            time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%D")
+            time_from = datetime.strptime(time_from, "%Y:%m:%d %H:%M")
         except ValueError:
             raise ValueError("Несуществующее время")
         #проверка времени до на корректность
         if not re.fullmatch(r"\d{4}:\d{2}:\d{2}\s\d{2}:\d{2}", time_to):
             raise ValueError("Неверный формат времени")
         try:
-            time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%D")
+            time_to = datetime.strptime(time_to, "%Y:%m:%d %H:%M")
         except ValueError:
             raise ValueError("Несуществующее время")
         #время до должно быть меньше времени после
@@ -141,9 +144,10 @@ class ListOfTimedMeetingRooms:
         if number_of_room not in range(1, len(self.rooms)+1):
             raise ValueError("Несуществующий номер переговорки")
         room = self.rooms[number_of_room-1]
-        if room.is_free_for_people(number_of_people,time_from,time_to):
-            room.book_room(number_of_people,time_from,time_to)
-        raise ValueError("Выбрана недоступная комната")
+        if not room.is_free_for_people(number_of_people,time_from,time_to):
+            raise ValueError("Выбрана недоступная комната")
+        room.book_room(number_of_people,time_from,time_to)
+
 
     def unbook_room(self, time_from: str, time_to: str, number_of_room: int):
         if number_of_room not in range(1, len(self.rooms)):
