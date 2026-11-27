@@ -17,6 +17,10 @@ class MeetingRooms:
             self.freedom = 0
         if self.freedom == 0:
             self.freedom = 1
+    def get_max_people(self):
+        return self.max_people
+    def get_freedom(self):
+        return self.freedom
 
 class TimedMeetingRooms(MeetingRooms):
     def __init__(self,max_people):
@@ -115,10 +119,39 @@ class TimedMeetingRooms(MeetingRooms):
 class ListOfTimedMeetingRooms:
     def __init__(self):
         self.rooms = []
-    def add_room(self, timed_meeting_room):
+
+    def add_room(self, timed_meeting_room : TimedMeetingRooms):
         self.rooms.append(timed_meeting_room)
-    def delete_room():
-        pass
+
+    def delete_room(self, number_of_room : int):
+        room = self.rooms[number_of_room-1]
+        if len(room.what_time_is_booked()) != 0:
+            raise ValueError("Попытка удалить забронированную комнату")
+        self.rooms.remove(room)
+
+    def find_room(self, number_of_people: int, time_from: str, time_to: str):
+        for i in range(len(self.rooms)):
+            room = self.rooms[i]
+            if room.is_free_for_people(number_of_people,time_from,time_to):
+                return i+1
+        return 0
+
+    def book_room(self, number_of_people: int, time_from: str, time_to: str, number_of_room: int):
+        if number_of_room not in range(1, len(self.rooms)):
+            raise ValueError("Несуществующий номер переговорки")
+        room = self.rooms[number_of_room-1]
+        if room.is_free_for_people(number_of_people,time_from,time_to):
+            room.book_room(number_of_people,time_from,time_to)
+        raise ValueError("Выбрана недоступная комната")
+
+    def unbook_room(self, time_from: str, time_to: str, number_of_room: int):
+        if number_of_room not in range(1, len(self.rooms)):
+            raise ValueError("Несуществующий номер переговорки")
+        self.rooms[number_of_room-1].unbook_room(time_from,time_to)
+
+    def get_rooms(self):
+        return self.rooms
+
 
 #класс отвечает распределение комнат и выдачу свободных
 class ListOfMeetingRooms:
