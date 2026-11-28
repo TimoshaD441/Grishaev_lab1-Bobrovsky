@@ -26,5 +26,8 @@ def show_rooms():
 def book_room(number_of_room: int, time_from: str, time_to: str, number_of_people: int):
     meeting_rooms.book_room(number_of_people,time_from,time_to,number_of_room)
 
-def unbook_room(number_of_room:int, time_from: str, time_to: str):
+def unbook_room(number_of_room: int, time_from: str, time_to: str):
     meeting_rooms.unbook_room(time_from, time_to,number_of_room)
+
+def delete_room(number_of_room: int):
+    meeting_rooms.delete_room(number_of_room)
