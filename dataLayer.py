@@ -131,7 +131,7 @@ class ListOfTimedMeetingRooms:
 
     def delete_room(self, number_of_room : int):
         room = self.rooms[number_of_room-1]
-        if len(room.what_time_is_booked()) != 0:
+        if len(room.get_booked_time()) != 0:
             raise ValueError("Попытка удалить забронированную комнату")
         self.rooms.remove(room)
 
