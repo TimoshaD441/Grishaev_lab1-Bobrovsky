@@ -112,7 +112,7 @@ class TimedMeetingRooms(MeetingRooms):
         if time_from == time_to:
             raise ValueError("Промежуток времени равен нулю")
         for index in range(0,len(self.booked_time),2):
-            if time_to == self.booked_time[index] and time_from == self.booked_time[index+1]:
+            if time_from == self.booked_time[index] and time_to == self.booked_time[index+1]:
                 self.booked_time = self.booked_time[:index]+self.booked_time[index+2:]
                 return 1
 
